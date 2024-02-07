@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -10,145 +10,145 @@ namespace Snake
 {
     class Program
     {
+        static int verticalTileCount = 16;
+        static int horizontalTileCount = 32;
         static void Main(string[] args)
         {
-            Console.WindowHeight = 16;
-            Console.WindowWidth = 32;
-            int screenwidth = Console.WindowWidth;
-            int screenheight = Console.WindowHeight;
-            Random randomnummer = new Random();
+            Console.WindowHeight = verticalTileCount;
+            Console.WindowWidth = horizontalTileCount;
+
+            Random randomNumberGenerator = new Random();
             int score = 5;
-            int gameover = 0;
-            pixel hoofd = new pixel();
-            hoofd.xpos = screenwidth/2;
-            hoofd.ypos = screenheight/2;
-            hoofd.schermkleur = ConsoleColor.Red;
+            bool gameover = false;
+            pixel snakeHead = new pixel();
+            snakeHead.xPosition = horizontalTileCount/2;
+            snakeHead.yPosition = verticalTileCount/2;
+            snakeHead.screenColor = ConsoleColor.Red;
             string movement = "RIGHT";
-            List<int> xposlijf = new List<int>();
-            List<int> yposlijf = new List<int>();
-            int berryx = randomnummer.Next(0, screenwidth);
-            int berryy = randomnummer.Next(0, screenheight);
-            DateTime tijd = DateTime.Now;
-            DateTime tijd2 = DateTime.Now;
-            string buttonpressed = "no";
+            List<int> snakeBodySegmentsX = new List<int>();
+            List<int> snakeBodySegmentsY = new List<int>();
+            int foodX = randomNumberGenerator.Next(0, horizontalTileCount);
+            int foodY = randomNumberGenerator.Next(0, verticalTileCount);
+            DateTime time = DateTime.Now;
+            DateTime time2 = DateTime.Now;
+            bool buttonPressed = false;
             while (true)
             {
                 Console.Clear();
-                if (hoofd.xpos == screenwidth-1 || hoofd.xpos == 0 ||hoofd.ypos == screenheight-1 || hoofd.ypos == 0)
+                if (snakeHead.xPosition == horizontalTileCount-1 || snakeHead.xPosition == 0 ||snakeHead.yPosition == verticalTileCount-1 || snakeHead.yPosition == 0)
                 { 
-                    gameover = 1;
+                    gameover = true;
                 }
-                for (int i = 0;i< screenwidth; i++)
+                for (int i = 0;i< horizontalTileCount; i++)
                 {
                     Console.SetCursorPosition(i, 0);
                     Console.Write("■");
                 }
-                for (int i = 0; i < screenwidth; i++)
+                for (int i = 0; i < horizontalTileCount; i++)
                 {
-                    Console.SetCursorPosition(i, screenheight -1);
+                    Console.SetCursorPosition(i, verticalTileCount -1);
                     Console.Write("■");
                 }
-                for (int i = 0; i < screenheight; i++)
+                for (int i = 0; i < verticalTileCount; i++)
                 {
                     Console.SetCursorPosition(0, i);
                     Console.Write("■");
                 }
-                for (int i = 0; i < screenheight; i++)
+                for (int i = 0; i < verticalTileCount; i++)
                 {
-                    Console.SetCursorPosition(screenwidth - 1, i);
+                    Console.SetCursorPosition(horizontalTileCount - 1, i);
                     Console.Write("■");
                 }
                 Console.ForegroundColor = ConsoleColor.Green;
-                if (berryx == hoofd.xpos && berryy == hoofd.ypos)
+                if (foodX == snakeHead.xPosition && foodY == snakeHead.yPosition)
                 {
                     score++;
-                    berryx = randomnummer.Next(1, screenwidth-2);
-                    berryy = randomnummer.Next(1, screenheight-2);
+                    foodX = randomNumberGenerator.Next(1, horizontalTileCount-2);
+                    foodY = randomNumberGenerator.Next(1, verticalTileCount-2);
                 } 
-                for (int i = 0; i < xposlijf.Count(); i++)
+                for (int i = 0; i < snakeBodySegmentsX.Count(); i++)
                 {
-                    Console.SetCursorPosition(xposlijf[i], yposlijf[i]);
+                    Console.SetCursorPosition(snakeBodySegmentsX[i], snakeBodySegmentsY[i]);
                     Console.Write("■");
-                    if (xposlijf[i] == hoofd.xpos && yposlijf[i] == hoofd.ypos)
+                    if (snakeBodySegmentsX[i] == snakeHead.xPosition && snakeBodySegmentsY[i] == snakeHead.yPosition)
                     {
-                        gameover = 1;
+                        gameover = true;
                     }
                 }
-                if (gameover == 1)
+                if (gameover)
                 {
                     break;
                 }
-                Console.SetCursorPosition(hoofd.xpos, hoofd.ypos);
-                Console.ForegroundColor = hoofd.schermkleur;
+                Console.SetCursorPosition(snakeHead.xPosition, snakeHead.yPosition);
+                Console.ForegroundColor = snakeHead.screenColor;
                 Console.Write("■");
-                Console.SetCursorPosition(berryx, berryy);
+                Console.SetCursorPosition(foodX, foodY);
                 Console.ForegroundColor = ConsoleColor.Cyan;
                 Console.Write("■");
-                tijd = DateTime.Now;
-                buttonpressed = "no";
+                time = DateTime.Now;
+                buttonPressed = false;
                 while (true)
                 {
-                    tijd2 = DateTime.Now;
-                    if (tijd2.Subtract(tijd).TotalMilliseconds > 500) { break; }
+                    time2 = DateTime.Now;
+                    if (time2.Subtract(time).TotalMilliseconds > 500) { break; }
                     if (Console.KeyAvailable)
                     {
                         ConsoleKeyInfo toets = Console.ReadKey(true);
                         //Console.WriteLine(toets.Key.ToString());
-                        if (toets.Key.Equals(ConsoleKey.UpArrow) && movement != "DOWN" && buttonpressed == "no")
+                        if (toets.Key.Equals(ConsoleKey.UpArrow) && movement != "DOWN" && !buttonPressed)
                         {
                             movement = "UP";
-                            buttonpressed = "yes";
+                            buttonPressed = true;
                         }
-                        if (toets.Key.Equals(ConsoleKey.DownArrow) && movement != "UP" && buttonpressed == "no")
+                        if (toets.Key.Equals(ConsoleKey.DownArrow) && movement != "UP" && !buttonPressed)
                         {
                             movement = "DOWN";
-                            buttonpressed = "yes";
+                            buttonPressed = true;
                         }
-                        if (toets.Key.Equals(ConsoleKey.LeftArrow) && movement != "RIGHT" && buttonpressed == "no")
+                        if (toets.Key.Equals(ConsoleKey.LeftArrow) && movement != "RIGHT" && !buttonPressed)
                         {
                             movement = "LEFT";
-                            buttonpressed = "yes";
+                            buttonPressed = true;
                         }
-                        if (toets.Key.Equals(ConsoleKey.RightArrow) && movement != "LEFT" && buttonpressed == "no")
+                        if (toets.Key.Equals(ConsoleKey.RightArrow) && movement != "LEFT" && !buttonPressed)
                         {
                             movement = "RIGHT";
-                            buttonpressed = "yes";
+                            buttonPressed = true;
                         }
                     }
                 }
-                xposlijf.Add(hoofd.xpos);
-                yposlijf.Add(hoofd.ypos);
+                snakeBodySegmentsX.Add(snakeHead.xPosition);
+                snakeBodySegmentsY.Add(snakeHead.yPosition);
                 switch (movement)
                 {
                     case "UP":
-                        hoofd.ypos--;
+                        snakeHead.yPosition--;
                         break;
                     case "DOWN":
-                        hoofd.ypos++;
+                        snakeHead.yPosition++;
                         break;
                     case "LEFT":
-                        hoofd.xpos--;
+                        snakeHead.xPosition--;
                         break;
                     case "RIGHT":
-                        hoofd.xpos++;
+                        snakeHead.xPosition++;
                         break;
                 }
-                if (xposlijf.Count() > score)
+                if (snakeBodySegmentsX.Count() > score)
                 {
-                    xposlijf.RemoveAt(0);
-                    yposlijf.RemoveAt(0);
+                    snakeBodySegmentsX.RemoveAt(0);
+                    snakeBodySegmentsY.RemoveAt(0);
                 }
             }
-            Console.SetCursorPosition(screenwidth / 5, screenheight / 2);
+            Console.SetCursorPosition(horizontalTileCount / 5, verticalTileCount / 2);
             Console.WriteLine("Game over, Score: "+ score);
-            Console.SetCursorPosition(screenwidth / 5, screenheight / 2 +1);
+            Console.SetCursorPosition(horizontalTileCount / 5, verticalTileCount / 2 +1);
         }
         class pixel
         {
-            public int xpos { get; set; }
-            public int ypos { get; set; }
-            public ConsoleColor schermkleur { get; set; }
+            public int xPosition { get; set; }
+            public int yPosition { get; set; }
+            public ConsoleColor screenColor { get; set; }
         }
     }
 }
-//¦
