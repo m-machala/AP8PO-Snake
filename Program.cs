@@ -20,7 +20,7 @@ namespace Snake
             Random randomNumberGenerator = new Random();
             int score = 5;
             bool gameover = false;
-            pixel snakeHead = new pixel();
+            tile snakeHead = new tile();
             snakeHead.xPosition = horizontalTileCount/2;
             snakeHead.yPosition = verticalTileCount/2;
             snakeHead.screenColor = ConsoleColor.Red;
@@ -144,11 +144,42 @@ namespace Snake
             Console.WriteLine("Game over, Score: "+ score);
             Console.SetCursorPosition(horizontalTileCount / 5, verticalTileCount / 2 +1);
         }
-        class pixel
+
+        private point2D calculateScreenCenterPoint()
         {
-            public int xPosition { get; set; }
-            public int yPosition { get; set; }
-            public ConsoleColor screenColor { get; set; }
+
+        }
+    }
+    /*class pixel
+    {
+        public int xPosition { get; set; }
+        public int yPosition { get; set; }
+        public ConsoleColor screenColor { get; set; }
+    }*/
+
+    class point2D
+    {
+        public int xPosition { get; set;}
+        public int yPosition { get; set;}
+
+        public point2D(int xPosition, int yPosition)
+        {
+            this.xPosition = xPosition;
+            this.yPosition = yPosition;
+        }
+    }
+
+    class tile
+    {
+        public point2D position { get; set; }
+        public char character { get; set; }
+        public ConsoleColor characterColor { get; set; }
+
+        public tile(int xPosition, int yPosition, char character, ConsoleColor characterColor)
+        {
+            this.position = new point2D(xPosition, yPosition);
+            this.character = character;
+            this.characterColor = characterColor;
         }
     }
 }
