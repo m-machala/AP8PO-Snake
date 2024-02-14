@@ -22,7 +22,7 @@ namespace Snake
             Random randomNumberGenerator = new Random();
             int score = 5;
             bool gameover = false;
-            tile snakeHead = new tile(calculateScreenCenterPoint(), snakeHeadCharacter, snakeHeadColor);
+            Tile snakeHead = new Tile(calculateScreenCenterPoint(), snakeHeadCharacter, snakeHeadColor);
             string movement = "RIGHT";
             List<int> snakeBodySegmentsX = new List<int>();
             List<int> snakeBodySegmentsY = new List<int>();
@@ -144,9 +144,9 @@ namespace Snake
             Console.SetCursorPosition(horizontalTileCount / 5, verticalTileCount / 2 +1);
         }
 
-        private static point2D calculateScreenCenterPoint()
+        private static Vector2D calculateScreenCenterPoint()
         {
-            return new point2D(horizontalTileCount/2, verticalTileCount/2);
+            return new Vector2D(horizontalTileCount/2, verticalTileCount/2);
         }
     }
     /*class pixel
@@ -156,32 +156,49 @@ namespace Snake
         public ConsoleColor screenColor { get; set; }
     }*/
 
-    class point2D
+    class Vector2D
     {
         public int xPosition { get; set;}
         public int yPosition { get; set;}
 
-        public point2D(int xPosition, int yPosition)
+        public Vector2D(int xPosition, int yPosition)
         {
             this.xPosition = xPosition;
             this.yPosition = yPosition;
         }
+
+        public Vector2D(Vector2D toCopy)
+        {
+            xPosition = toCopy.xPosition;
+            yPosition = toCopy.yPosition;
+        }
+
+        public void addToVector(Vector2D toAdd)
+        {
+            xPosition += toAdd.xPosition;
+            yPosition += toAdd.yPosition;
+        }
+
+        public bool compareToVector(Vector2D toCompare)
+        {
+            return xPosition == toCompare.xPosition && yPosition == toCompare.yPosition;
+        }
     }
 
-    class tile
+    class Tile
     {
-        public point2D position { get; set; }
+        public Vector2D position { get; set; }
         public char character { get; set; }
         public ConsoleColor characterColor { get; set; }
 
-        public tile(int xPosition, int yPosition, char character, ConsoleColor characterColor)
+        public Tile(int xPosition, int yPosition, char character, ConsoleColor characterColor)
         {
-            this.position = new point2D(xPosition, yPosition);
+            this.position = new Vector2D(xPosition, yPosition);
             this.character = character;
             this.characterColor = characterColor;
         }
 
-        public tile(point2D position, char character, ConsoleColor characterColor)
+        public Tile(Vector2D position, char character, ConsoleColor characterColor)
         {
             this.position = position;
             this.character = character;
@@ -196,6 +213,84 @@ namespace Snake
         public int yPosition()
         {
             return position.yPosition;
+        }
+    }
+
+    static class Directions
+    {
+        public static Vector2D Up = new Vector2D(0, -1);
+        public static Vector2D Down = new Vector2D(0, 1);
+        public static Vector2D Left = new Vector2D(-1, 0);
+        public static Vector2D Right = new Vector2D(1, 0);
+    }
+
+    class Snake
+    {
+        public Vector2D movementVector { get; set; }
+
+        private ConsoleColor bodyColor;
+
+        private char bodyCharacter;
+
+        private Tile head;
+
+        private List<Tile> body;
+
+
+        public Snake(ConsoleColor headColor, ConsoleColor bodyColor,  char headCharacter, char bodyCharacter, Vector2D startingHeadPosition, int startingSegmentCount, Vector2D startingDirection)
+        {
+            head = new Tile(startingHeadPosition, headCharacter, bodyColor);
+            this.bodyColor = bodyColor;
+            this.bodyCharacter = bodyCharacter;
+            this.movementVector = startingDirection;
+            body = new List<Tile>();
+
+            for (int i = 0; i < startingSegmentCount; i++)
+            {
+                eat();
+            }
+        }
+
+        private void eat()
+        {
+            Vector2D newTilePosition = new Vector2D(0, 0);
+            if (body.Count <= 0)
+            {
+                newTilePosition = head.position;
+            }
+            else
+            {
+                newTilePosition = body[body.Count - 1].position;
+            }
+
+            body.Add(new Tile(newTilePosition, bodyCharacter, bodyColor));
+        }
+
+        public void move()
+        {
+            for (int i = body.Count - 1; i >= 1; i--)
+            {
+                body[i].position = body[i-1].position;
+            }
+            if (body.Count > 0)
+            {
+                body[0].position = new Vector2D(head.position);
+            }
+            head.position.addToVector(this.movementVector);
+        }
+
+        public bool headCollidesWithBody()
+        {
+            for (int i = 0; i < body.Count; i++)
+            {
+                if (head.position.compareToVector(body[i].position)) return true;
+            }
+            return false;
+        }
+
+        public bool collidesWithHead(Vector2D position)
+        {
+            return head.position.compareToVector(position);
         }
     }
 }
