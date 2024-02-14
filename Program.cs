@@ -12,6 +12,8 @@ namespace Snake
     {
         static int verticalTileCount = 16;
         static int horizontalTileCount = 32;
+        static char snakeHeadCharacter = '■';
+        static ConsoleColor snakeHeadColor = ConsoleColor.Red;
         static void Main(string[] args)
         {
             Console.WindowHeight = verticalTileCount;
@@ -20,10 +22,7 @@ namespace Snake
             Random randomNumberGenerator = new Random();
             int score = 5;
             bool gameover = false;
-            tile snakeHead = new tile();
-            snakeHead.xPosition = horizontalTileCount/2;
-            snakeHead.yPosition = verticalTileCount/2;
-            snakeHead.screenColor = ConsoleColor.Red;
+            tile snakeHead = new tile(calculateScreenCenterPoint(), snakeHeadCharacter, snakeHeadColor);
             string movement = "RIGHT";
             List<int> snakeBodySegmentsX = new List<int>();
             List<int> snakeBodySegmentsY = new List<int>();
@@ -35,7 +34,7 @@ namespace Snake
             while (true)
             {
                 Console.Clear();
-                if (snakeHead.xPosition == horizontalTileCount-1 || snakeHead.xPosition == 0 ||snakeHead.yPosition == verticalTileCount-1 || snakeHead.yPosition == 0)
+                if (snakeHead.xPosition() == horizontalTileCount-1 || snakeHead.xPosition() == 0 ||snakeHead.yPosition() == verticalTileCount-1 || snakeHead.yPosition() == 0)
                 { 
                     gameover = true;
                 }
@@ -60,7 +59,7 @@ namespace Snake
                     Console.Write("■");
                 }
                 Console.ForegroundColor = ConsoleColor.Green;
-                if (foodX == snakeHead.xPosition && foodY == snakeHead.yPosition)
+                if (foodX == snakeHead.xPosition() && foodY == snakeHead.yPosition())
                 {
                     score++;
                     foodX = randomNumberGenerator.Next(1, horizontalTileCount-2);
@@ -70,7 +69,7 @@ namespace Snake
                 {
                     Console.SetCursorPosition(snakeBodySegmentsX[i], snakeBodySegmentsY[i]);
                     Console.Write("■");
-                    if (snakeBodySegmentsX[i] == snakeHead.xPosition && snakeBodySegmentsY[i] == snakeHead.yPosition)
+                    if (snakeBodySegmentsX[i] == snakeHead.xPosition() && snakeBodySegmentsY[i] == snakeHead.yPosition())
                     {
                         gameover = true;
                     }
@@ -79,8 +78,8 @@ namespace Snake
                 {
                     break;
                 }
-                Console.SetCursorPosition(snakeHead.xPosition, snakeHead.yPosition);
-                Console.ForegroundColor = snakeHead.screenColor;
+                Console.SetCursorPosition(snakeHead.xPosition(), snakeHead.yPosition());
+                Console.ForegroundColor = snakeHead.characterColor;
                 Console.Write("■");
                 Console.SetCursorPosition(foodX, foodY);
                 Console.ForegroundColor = ConsoleColor.Cyan;
@@ -117,21 +116,21 @@ namespace Snake
                         }
                     }
                 }
-                snakeBodySegmentsX.Add(snakeHead.xPosition);
-                snakeBodySegmentsY.Add(snakeHead.yPosition);
+                snakeBodySegmentsX.Add(snakeHead.xPosition());
+                snakeBodySegmentsY.Add(snakeHead.yPosition());
                 switch (movement)
                 {
                     case "UP":
-                        snakeHead.yPosition--;
+                        snakeHead.position.yPosition--;
                         break;
                     case "DOWN":
-                        snakeHead.yPosition++;
+                        snakeHead.position.yPosition++;
                         break;
                     case "LEFT":
-                        snakeHead.xPosition--;
+                        snakeHead.position.xPosition--;
                         break;
                     case "RIGHT":
-                        snakeHead.xPosition++;
+                        snakeHead.position.xPosition++;
                         break;
                 }
                 if (snakeBodySegmentsX.Count() > score)
@@ -145,9 +144,9 @@ namespace Snake
             Console.SetCursorPosition(horizontalTileCount / 5, verticalTileCount / 2 +1);
         }
 
-        private point2D calculateScreenCenterPoint()
+        private static point2D calculateScreenCenterPoint()
         {
-
+            return new point2D(horizontalTileCount/2, verticalTileCount/2);
         }
     }
     /*class pixel
@@ -180,6 +179,23 @@ namespace Snake
             this.position = new point2D(xPosition, yPosition);
             this.character = character;
             this.characterColor = characterColor;
+        }
+
+        public tile(point2D position, char character, ConsoleColor characterColor)
+        {
+            this.position = position;
+            this.character = character;
+            this.characterColor = characterColor;
+        }
+
+        public int xPosition()
+        {
+            return position.xPosition;
+        }
+
+        public int yPosition()
+        {
+            return position.yPosition;
         }
     }
 }

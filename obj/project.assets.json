@@ -8,19 +8,19 @@
     "net6.0": []
   },
   "packageFolders": {
-    "C:\\Users\\m_machala\\.nuget\\packages\\": {}
+    "C:\\Users\\macha\\.nuget\\packages\\": {}
   },
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "C:\\Users\\m_machala\\source\\repos\\Snake\\Snake\\Snake.csproj",
+      "projectUniqueName": "C:\\Users\\macha\\Documents\\UTB\\AP8PO\\AP8PO-Snake\\Snake.csproj",
       "projectName": "Snake",
-      "projectPath": "C:\\Users\\m_machala\\source\\repos\\Snake\\Snake\\Snake.csproj",
-      "packagesPath": "C:\\Users\\m_machala\\.nuget\\packages\\",
-      "outputPath": "C:\\Users\\m_machala\\source\\repos\\Snake\\Snake\\obj\\",
+      "projectPath": "C:\\Users\\macha\\Documents\\UTB\\AP8PO\\AP8PO-Snake\\Snake.csproj",
+      "packagesPath": "C:\\Users\\macha\\.nuget\\packages\\",
+      "outputPath": "C:\\Users\\macha\\Documents\\UTB\\AP8PO\\AP8PO-Snake\\obj\\",
       "projectStyle": "PackageReference",
       "configFilePaths": [
-        "C:\\Users\\m_machala\\AppData\\Roaming\\NuGet\\NuGet.Config",
+        "C:\\Users\\macha\\AppData\\Roaming\\NuGet\\NuGet.Config",
         "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
       ],
       "originalTargetFrameworks": [
@@ -61,7 +61,7 @@
             "privateAssets": "all"
           }
         },
-        "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\7.0.401\\RuntimeIdentifierGraph.json"
+        "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\8.0.101\\RuntimeIdentifierGraph.json"
       }
     }
   }
