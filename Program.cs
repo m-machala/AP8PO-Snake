@@ -226,11 +226,9 @@ namespace Snake
     class Snake
     {
         public Vector2D movementVector { get; set; }
-        public ConsoleColor headColor { get; set; }
-        public ConsoleColor bodyColor {  get; set; }
+        private ConsoleColor bodyColor;
 
-        public char headCharacter { get; set; }
-        public char bodyCharacter {  get; set; }
+        private char bodyCharacter;
 
         public Tile head { get; }
 
@@ -240,10 +238,8 @@ namespace Snake
         public Snake(ConsoleColor headColor, ConsoleColor bodyColor,  char headCharacter, char bodyCharacter, Vector2D startingHeadPosition, int startingSegmentCount, Vector2D startingDirection)
         {
             head = new Tile(startingHeadPosition, headCharacter, headColor);
-            this.headColor = headColor;
             this.bodyColor = bodyColor;
             this.bodyCharacter = bodyCharacter;
-            this.headCharacter = headCharacter;
             this.movementVector = startingDirection;
             body = new List<Tile>();
 
