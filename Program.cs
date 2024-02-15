@@ -4,6 +4,8 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Threading;
+using System.Security.Cryptography;
+using System.Xml.Linq;
 ///█ ■
 ////https://www.youtube.com/watch?v=SGZgvMwjq2U
 namespace Snake
@@ -13,7 +15,10 @@ namespace Snake
         static int verticalTileCount = 16;
         static int horizontalTileCount = 32;
         static char snakeHeadCharacter = '■';
+        static char snakeBodyCharacter = '■';
         static ConsoleColor snakeHeadColor = ConsoleColor.Red;
+        static ConsoleColor snakeBodyColor = ConsoleColor.Green;
+        static int initialBodyLength = 5;
         static void Main(string[] args)
         {
             Console.WindowHeight = verticalTileCount;
@@ -22,10 +27,11 @@ namespace Snake
             Random randomNumberGenerator = new Random();
             int score = 5;
             bool gameover = false;
-            Tile snakeHead = new Tile(calculateScreenCenterPoint(), snakeHeadCharacter, snakeHeadColor);
+            /*Tile snakeHead = new Tile(calculateScreenCenterPoint(), snakeHeadCharacter, snakeHeadColor);
             string movement = "RIGHT";
             List<int> snakeBodySegmentsX = new List<int>();
-            List<int> snakeBodySegmentsY = new List<int>();
+            List<int> snakeBodySegmentsY = new List<int>();*/
+            Snake snake = new Snake(snakeHeadColor, snakeBodyColor, snakeHeadCharacter, snakeBodyCharacter, calculateScreenCenterPoint(), initialBodyLength, Directions.Right);
             int foodX = randomNumberGenerator.Next(0, horizontalTileCount);
             int foodY = randomNumberGenerator.Next(0, verticalTileCount);
             DateTime time = DateTime.Now;
@@ -34,10 +40,13 @@ namespace Snake
             while (true)
             {
                 Console.Clear();
-                if (snakeHead.xPosition() == horizontalTileCount-1 || snakeHead.xPosition() == 0 ||snakeHead.yPosition() == verticalTileCount-1 || snakeHead.yPosition() == 0)
-                { 
-                    gameover = true;
-                }
+                int headX = snake.headPosition().xPosition;
+                int headY = snake.headPosition().yPosition;
+
+                /*if (!(0 <= headX && headX < horizontalTileCount)) gameover = true;
+                if (!(0 <= headY && headY < verticalTileCount)) gameover = true;
+                gameover = snake.headCollidesWithBody();*/
+
                 for (int i = 0;i< horizontalTileCount; i++)
                 {
                     Console.SetCursorPosition(i, 0);
@@ -58,14 +67,17 @@ namespace Snake
                     Console.SetCursorPosition(horizontalTileCount - 1, i);
                     Console.Write("■");
                 }
-                Console.ForegroundColor = ConsoleColor.Green;
-                if (foodX == snakeHead.xPosition() && foodY == snakeHead.yPosition())
+
+                if (foodX == headX && foodY == headY)
                 {
                     score++;
                     foodX = randomNumberGenerator.Next(1, horizontalTileCount-2);
                     foodY = randomNumberGenerator.Next(1, verticalTileCount-2);
-                } 
-                for (int i = 0; i < snakeBodySegmentsX.Count(); i++)
+                    snake.eat();
+                }
+
+               
+                /*for (int i = 0; i < snakeBodySegmentsX.Count(); i++)
                 {
                     Console.SetCursorPosition(snakeBodySegmentsX[i], snakeBodySegmentsY[i]);
                     Console.Write("■");
@@ -73,14 +85,18 @@ namespace Snake
                     {
                         gameover = true;
                     }
+                }*/
+                for (int i = 0; i < snake.body.Count; i++)
+                {
+                    renderTile(snake.body[i]);
                 }
+                renderTile(snake.head);
+
                 if (gameover)
                 {
                     break;
                 }
-                Console.SetCursorPosition(snakeHead.xPosition(), snakeHead.yPosition());
-                Console.ForegroundColor = snakeHead.characterColor;
-                Console.Write("■");
+                renderTile(snake.head);
                 Console.SetCursorPosition(foodX, foodY);
                 Console.ForegroundColor = ConsoleColor.Cyan;
                 Console.Write("■");
@@ -92,33 +108,44 @@ namespace Snake
                     if (time2.Subtract(time).TotalMilliseconds > 500) { break; }
                     if (Console.KeyAvailable)
                     {
-                        ConsoleKeyInfo toets = Console.ReadKey(true);
-                        //Console.WriteLine(toets.Key.ToString());
-                        if (toets.Key.Equals(ConsoleKey.UpArrow) && movement != "DOWN" && !buttonPressed)
+                        ConsoleKeyInfo pressedKey = Console.ReadKey(true);
+
+                        if (!buttonPressed)
                         {
-                            movement = "UP";
-                            buttonPressed = true;
+                            Vector2D newMovementVector = new Vector2D(0, 0);
+                            if (pressedKey.Key.Equals(ConsoleKey.UpArrow))
+                            {
+                                newMovementVector = Directions.Up;
+                                buttonPressed = true;
+                            }
+                            if (pressedKey.Key.Equals(ConsoleKey.DownArrow))
+                            {
+                                newMovementVector = Directions.Down;
+                                buttonPressed = true;
+                            }
+                            if (pressedKey.Key.Equals(ConsoleKey.LeftArrow))
+                            {
+                                newMovementVector = Directions.Left;
+                                buttonPressed = true;
+                            }
+                            if (pressedKey.Key.Equals(ConsoleKey.RightArrow))
+                            {
+                                newMovementVector = Directions.Right;
+                                buttonPressed = true;
+                            }
+
+                            Vector2D compareVector = new Vector2D(snake.movementVector);
+                            compareVector.addToVector(newMovementVector);
+                            if(!compareVector.compareToVector(new Vector2D(0, 0)))
+                            {
+                                snake.movementVector = newMovementVector;
+                            }
                         }
-                        if (toets.Key.Equals(ConsoleKey.DownArrow) && movement != "UP" && !buttonPressed)
-                        {
-                            movement = "DOWN";
-                            buttonPressed = true;
-                        }
-                        if (toets.Key.Equals(ConsoleKey.LeftArrow) && movement != "RIGHT" && !buttonPressed)
-                        {
-                            movement = "LEFT";
-                            buttonPressed = true;
-                        }
-                        if (toets.Key.Equals(ConsoleKey.RightArrow) && movement != "LEFT" && !buttonPressed)
-                        {
-                            movement = "RIGHT";
-                            buttonPressed = true;
-                        }
+                        
                     }
                 }
-                snakeBodySegmentsX.Add(snakeHead.xPosition());
-                snakeBodySegmentsY.Add(snakeHead.yPosition());
-                switch (movement)
+                snake.move();
+                /*switch (movement)
                 {
                     case "UP":
                         snakeHead.position.yPosition--;
@@ -132,12 +159,12 @@ namespace Snake
                     case "RIGHT":
                         snakeHead.position.xPosition++;
                         break;
-                }
-                if (snakeBodySegmentsX.Count() > score)
+                }*/
+                /*if (snakeBodySegmentsX.Count() > score)
                 {
                     snakeBodySegmentsX.RemoveAt(0);
                     snakeBodySegmentsY.RemoveAt(0);
-                }
+                }*/
             }
             Console.SetCursorPosition(horizontalTileCount / 5, verticalTileCount / 2);
             Console.WriteLine("Game over, Score: "+ score);
@@ -148,13 +175,14 @@ namespace Snake
         {
             return new Vector2D(horizontalTileCount/2, verticalTileCount/2);
         }
+
+        private static void renderTile(Tile tile)
+        {
+            Console.ForegroundColor = tile.characterColor;
+            Console.SetCursorPosition(tile.xPosition(), tile.yPosition());
+            Console.Write(tile.character);
+        }
     }
-    /*class pixel
-    {
-        public int xPosition { get; set; }
-        public int yPosition { get; set; }
-        public ConsoleColor screenColor { get; set; }
-    }*/
 
     class Vector2D
     {
@@ -227,21 +255,24 @@ namespace Snake
     class Snake
     {
         public Vector2D movementVector { get; set; }
+        public ConsoleColor headColor { get; set; }
+        public ConsoleColor bodyColor {  get; set; }
 
-        private ConsoleColor bodyColor;
+        public char headCharacter { get; set; }
+        public char bodyCharacter {  get; set; }
 
-        private char bodyCharacter;
+        public Tile head { get; }
 
-        private Tile head;
-
-        private List<Tile> body;
+        public List<Tile> body { get; }
 
 
         public Snake(ConsoleColor headColor, ConsoleColor bodyColor,  char headCharacter, char bodyCharacter, Vector2D startingHeadPosition, int startingSegmentCount, Vector2D startingDirection)
         {
-            head = new Tile(startingHeadPosition, headCharacter, bodyColor);
+            head = new Tile(startingHeadPosition, headCharacter, headColor);
+            this.headColor = headColor;
             this.bodyColor = bodyColor;
             this.bodyCharacter = bodyCharacter;
+            this.headCharacter = headCharacter;
             this.movementVector = startingDirection;
             body = new List<Tile>();
 
@@ -251,7 +282,7 @@ namespace Snake
             }
         }
 
-        private void eat()
+        public void eat()
         {
             Vector2D newTilePosition = new Vector2D(0, 0);
             if (body.Count <= 0)
@@ -291,6 +322,11 @@ namespace Snake
         public bool collidesWithHead(Vector2D position)
         {
             return head.position.compareToVector(position);
+        }
+
+        public Vector2D headPosition()
+        {
+            return head.position;
         }
     }
 }
