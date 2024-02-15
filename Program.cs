@@ -37,15 +37,12 @@ namespace Snake
             DateTime time = DateTime.Now;
             DateTime time2 = DateTime.Now;
             bool buttonPressed = false;
-            while (true)
+            while (!gameover)
             {
                 Console.Clear();
                 int headX = snake.headPosition().xPosition;
                 int headY = snake.headPosition().yPosition;
 
-                /*if (!(0 <= headX && headX < horizontalTileCount)) gameover = true;
-                if (!(0 <= headY && headY < verticalTileCount)) gameover = true;
-                gameover = snake.headCollidesWithBody();*/
 
                 for (int i = 0;i< horizontalTileCount; i++)
                 {
@@ -77,15 +74,6 @@ namespace Snake
                 }
 
                
-                /*for (int i = 0; i < snakeBodySegmentsX.Count(); i++)
-                {
-                    Console.SetCursorPosition(snakeBodySegmentsX[i], snakeBodySegmentsY[i]);
-                    Console.Write("■");
-                    if (snakeBodySegmentsX[i] == snakeHead.xPosition() && snakeBodySegmentsY[i] == snakeHead.yPosition())
-                    {
-                        gameover = true;
-                    }
-                }*/
                 for (int i = 0; i < snake.body.Count; i++)
                 {
                     renderTile(snake.body[i]);
@@ -145,26 +133,9 @@ namespace Snake
                     }
                 }
                 snake.move();
-                /*switch (movement)
-                {
-                    case "UP":
-                        snakeHead.position.yPosition--;
-                        break;
-                    case "DOWN":
-                        snakeHead.position.yPosition++;
-                        break;
-                    case "LEFT":
-                        snakeHead.position.xPosition--;
-                        break;
-                    case "RIGHT":
-                        snakeHead.position.xPosition++;
-                        break;
-                }*/
-                /*if (snakeBodySegmentsX.Count() > score)
-                {
-                    snakeBodySegmentsX.RemoveAt(0);
-                    snakeBodySegmentsY.RemoveAt(0);
-                }*/
+                if (!(0 <= headX && headX < horizontalTileCount)) gameover = true;
+                if (!(0 <= headY && headY < verticalTileCount)) gameover = true;
+                gameover = snake.headCollidesWithBody();
             }
             Console.SetCursorPosition(horizontalTileCount / 5, verticalTileCount / 2);
             Console.WriteLine("Game over, Score: "+ score);
@@ -287,7 +258,7 @@ namespace Snake
             Vector2D newTilePosition = new Vector2D(0, 0);
             if (body.Count <= 0)
             {
-                newTilePosition = head.position;
+                newTilePosition.addToVector(head.position);
             }
             else
             {
