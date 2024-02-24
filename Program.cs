@@ -14,11 +14,15 @@ namespace Snake
     {
         static int verticalTileCount = 16;
         static int horizontalTileCount = 32;
+
         static char snakeHeadCharacter = '■';
         static char snakeBodyCharacter = '■';
+
         static ConsoleColor snakeHeadColor = ConsoleColor.Red;
         static ConsoleColor snakeBodyColor = ConsoleColor.Green;
+
         static int initialBodyLength = 5;
+
         static void Main(string[] args)
         {
             Console.WindowHeight = verticalTileCount;
@@ -27,23 +31,19 @@ namespace Snake
             Random randomNumberGenerator = new Random();
             int score = 5;
             bool gameover = false;
-            /*Tile snakeHead = new Tile(calculateScreenCenterPoint(), snakeHeadCharacter, snakeHeadColor);
-            string movement = "RIGHT";
-            List<int> snakeBodySegmentsX = new List<int>();
-            List<int> snakeBodySegmentsY = new List<int>();*/
+
             Snake snake = new Snake(snakeHeadColor, snakeBodyColor, snakeHeadCharacter, snakeBodyCharacter, calculateScreenCenterPoint(), initialBodyLength, Directions.Right);
             int foodX = randomNumberGenerator.Next(0, horizontalTileCount);
             int foodY = randomNumberGenerator.Next(0, verticalTileCount);
             DateTime time = DateTime.Now;
             DateTime time2 = DateTime.Now;
             bool buttonPressed = false;
+            int headX = snake.headPosition().xPosition;
+            int headY = snake.headPosition().yPosition;
             while (!gameover)
             {
                 Console.Clear();
-                int headX = snake.headPosition().xPosition;
-                int headY = snake.headPosition().yPosition;
-
-
+ 
                 for (int i = 0;i< horizontalTileCount; i++)
                 {
                     Console.SetCursorPosition(i, 0);
@@ -80,10 +80,6 @@ namespace Snake
                 }
                 renderTile(snake.head);
 
-                if (gameover)
-                {
-                    break;
-                }
                 renderTile(snake.head);
                 Console.SetCursorPosition(foodX, foodY);
                 Console.ForegroundColor = ConsoleColor.Cyan;
@@ -133,9 +129,11 @@ namespace Snake
                     }
                 }
                 snake.move();
+                headX = snake.headPosition().xPosition;
+                headY = snake.headPosition().yPosition;
                 if (!(0 <= headX && headX < horizontalTileCount)) gameover = true;
-                if (!(0 <= headY && headY < verticalTileCount)) gameover = true;
-                gameover = snake.headCollidesWithBody();
+                else if (!(0 <= headY && headY < verticalTileCount)) gameover = true;
+                else gameover = snake.headCollidesWithBody();
             }
             Console.SetCursorPosition(horizontalTileCount / 5, verticalTileCount / 2);
             Console.WriteLine("Game over, Score: "+ score);
@@ -153,147 +151,5 @@ namespace Snake
             Console.SetCursorPosition(tile.xPosition(), tile.yPosition());
             Console.Write(tile.character);
         }
-    }
-
-    class Vector2D
-    {
-        public int xPosition { get; set;}
-        public int yPosition { get; set;}
-
-        public Vector2D(int xPosition, int yPosition)
-        {
-            this.xPosition = xPosition;
-            this.yPosition = yPosition;
-        }
-
-        public Vector2D(Vector2D toCopy)
-        {
-            xPosition = toCopy.xPosition;
-            yPosition = toCopy.yPosition;
-        }
-
-        public void addToVector(Vector2D toAdd)
-        {
-            xPosition += toAdd.xPosition;
-            yPosition += toAdd.yPosition;
-        }
-
-        public bool compareToVector(Vector2D toCompare)
-        {
-            return xPosition == toCompare.xPosition && yPosition == toCompare.yPosition;
-        }
-    }
-
-    class Tile
-    {
-        public Vector2D position { get; set; }
-        public char character { get; set; }
-        public ConsoleColor characterColor { get; set; }
-
-        public Tile(int xPosition, int yPosition, char character, ConsoleColor characterColor)
-        {
-            this.position = new Vector2D(xPosition, yPosition);
-            this.character = character;
-            this.characterColor = characterColor;
-        }
-
-        public Tile(Vector2D position, char character, ConsoleColor characterColor)
-        {
-            this.position = position;
-            this.character = character;
-            this.characterColor = characterColor;
-        }
-
-        public int xPosition()
-        {
-            return position.xPosition;
-        }
-
-        public int yPosition()
-        {
-            return position.yPosition;
-        }
-    }
-
-    static class Directions
-    {
-        public static Vector2D Up = new Vector2D(0, -1);
-        public static Vector2D Down = new Vector2D(0, 1);
-        public static Vector2D Left = new Vector2D(-1, 0);
-        public static Vector2D Right = new Vector2D(1, 0);
-    }
-
-    class Snake
-    {
-        public Vector2D movementVector { get; set; }
-        private ConsoleColor bodyColor;
-
-        private char bodyCharacter;
-
-        public Tile head { get; }
-
-        public List<Tile> body { get; }
-
-
-        public Snake(ConsoleColor headColor, ConsoleColor bodyColor,  char headCharacter, char bodyCharacter, Vector2D startingHeadPosition, int startingSegmentCount, Vector2D startingDirection)
-        {
-            head = new Tile(startingHeadPosition, headCharacter, headColor);
-            this.bodyColor = bodyColor;
-            this.bodyCharacter = bodyCharacter;
-            this.movementVector = startingDirection;
-            body = new List<Tile>();
-
-            for (int i = 0; i < startingSegmentCount; i++)
-            {
-                eat();
-            }
-        }
-
-        public void eat()
-        {
-            Vector2D newTilePosition = new Vector2D(0, 0);
-            if (body.Count <= 0)
-            {
-                newTilePosition.addToVector(head.position);
-            }
-            else
-            {
-                newTilePosition = body[body.Count - 1].position;
-            }
-
-            body.Add(new Tile(newTilePosition, bodyCharacter, bodyColor));
-        }
-
-        public void move()
-        {
-            for (int i = body.Count - 1; i >= 1; i--)
-            {
-                body[i].position = body[i-1].position;
-            }
-            if (body.Count > 0)
-            {
-                body[0].position = new Vector2D(head.position);
-            }
-            head.position.addToVector(this.movementVector);
-        }
-
-        public bool headCollidesWithBody()
-        {
-            for (int i = 0; i < body.Count; i++)
-            {
-                if (head.position.compareToVector(body[i].position)) return true;
-            }
-            return false;
-        }
-
-        public bool collidesWithHead(Vector2D position)
-        {
-            return head.position.compareToVector(position);
-        }
-
-        public Vector2D headPosition()
-        {
-            return head.position;
-        }
-    }
+    }  
 }
