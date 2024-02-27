@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using System.Threading;
 using System.Security.Cryptography;
 using System.Xml.Linq;
+using System.Runtime.CompilerServices;
 ///█ ■
 ////https://www.youtube.com/watch?v=SGZgvMwjq2U
 namespace Snake
@@ -14,6 +15,7 @@ namespace Snake
     {
         static int verticalTileCount = 16;
         static int horizontalTileCount = 32;
+        static Vector2D borderDimensions = new Vector2D(horizontalTileCount, verticalTileCount);
 
         static char snakeHeadCharacter = '■';
         static char snakeBodyCharacter = '■';
@@ -25,6 +27,9 @@ namespace Snake
 
         static void Main(string[] args)
         {
+            Renderer renderer = new ConsoleRenderer();
+            
+
             Console.WindowHeight = verticalTileCount;
             Console.WindowWidth = horizontalTileCount;
 
@@ -33,37 +38,19 @@ namespace Snake
             bool gameover = false;
 
             Snake snake = new Snake(snakeHeadColor, snakeBodyColor, snakeHeadCharacter, snakeBodyCharacter, calculateScreenCenterPoint(), initialBodyLength, Directions.Right);
-            int foodX = randomNumberGenerator.Next(0, horizontalTileCount);
-            int foodY = randomNumberGenerator.Next(0, verticalTileCount);
+            Food food = new Food(randomPosition(borderDimensions));
+
             DateTime time = DateTime.Now;
             DateTime time2 = DateTime.Now;
             bool buttonPressed = false;
             int headX = snake.headPosition().xPosition;
             int headY = snake.headPosition().yPosition;
+            int foodX = food.position.xPosition;
+            int foodY = food.position.yPosition;
             while (!gameover)
             {
                 Console.Clear();
- 
-                for (int i = 0;i< horizontalTileCount; i++)
-                {
-                    Console.SetCursorPosition(i, 0);
-                    Console.Write("■");
-                }
-                for (int i = 0; i < horizontalTileCount; i++)
-                {
-                    Console.SetCursorPosition(i, verticalTileCount -1);
-                    Console.Write("■");
-                }
-                for (int i = 0; i < verticalTileCount; i++)
-                {
-                    Console.SetCursorPosition(0, i);
-                    Console.Write("■");
-                }
-                for (int i = 0; i < verticalTileCount; i++)
-                {
-                    Console.SetCursorPosition(horizontalTileCount - 1, i);
-                    Console.Write("■");
-                }
+                renderer.renderBorders(borderDimensions);
 
                 if (foodX == headX && foodY == headY)
                 {
@@ -72,13 +59,7 @@ namespace Snake
                     foodY = randomNumberGenerator.Next(1, verticalTileCount-2);
                     snake.eat();
                 }
-
-               
-                for (int i = 0; i < snake.body.Count; i++)
-                {
-                    renderTile(snake.body[i]);
-                }
-                renderTile(snake.head);
+                renderer.renderSnake(snake);
 
                 renderTile(snake.head);
                 Console.SetCursorPosition(foodX, foodY);
@@ -150,6 +131,12 @@ namespace Snake
             Console.ForegroundColor = tile.characterColor;
             Console.SetCursorPosition(tile.xPosition(), tile.yPosition());
             Console.Write(tile.character);
+        }
+
+        private static Vector2D randomPosition(Vector2D screenDimensions)
+        {
+            Random random = new Random();
+            return new Vector2D(random.Next(1, screenDimensions.xPosition - 1), random.Next(1, screenDimensions.yPosition - 1));
         }
     }  
 }
