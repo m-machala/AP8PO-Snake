@@ -43,8 +43,8 @@ namespace Snake
             DateTime time = DateTime.Now;
             DateTime time2 = DateTime.Now;
             bool buttonPressed = false;
-            int headX = snake.headPosition().xPosition;
-            int headY = snake.headPosition().yPosition;
+            int headX = snake.head.xPosition;
+            int headY = snake.head.yPosition;
             int foodX = food.position.xPosition;
             int foodY = food.position.yPosition;
             while (!gameover)
@@ -61,7 +61,6 @@ namespace Snake
                 }
                 renderer.renderSnake(snake);
 
-                renderTile(snake.head);
                 Console.SetCursorPosition(foodX, foodY);
                 Console.ForegroundColor = ConsoleColor.Cyan;
                 Console.Write("■");
@@ -110,8 +109,8 @@ namespace Snake
                     }
                 }
                 snake.move();
-                headX = snake.headPosition().xPosition;
-                headY = snake.headPosition().yPosition;
+                headX = snake.head.xPosition;
+                headY = snake.head.yPosition;
                 if (!(0 <= headX && headX < horizontalTileCount)) gameover = true;
                 else if (!(0 <= headY && headY < verticalTileCount)) gameover = true;
                 else gameover = snake.headCollidesWithBody();
@@ -124,13 +123,6 @@ namespace Snake
         private static Vector2D calculateScreenCenterPoint()
         {
             return new Vector2D(horizontalTileCount/2, verticalTileCount/2);
-        }
-
-        private static void renderTile(Tile tile)
-        {
-            Console.ForegroundColor = tile.characterColor;
-            Console.SetCursorPosition(tile.xPosition(), tile.yPosition());
-            Console.Write(tile.character);
         }
 
         private static Vector2D randomPosition(Vector2D screenDimensions)

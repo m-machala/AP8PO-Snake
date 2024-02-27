@@ -26,12 +26,12 @@ namespace Snake
             Console.ForegroundColor = snakeBodyColor;
             for (int i = 0; i < snake.body.Count; i++)
             {
-                Console.SetCursorPosition(snake.body[i].position.xPosition, snake.body[i].position.yPosition);
+                Console.SetCursorPosition(snake.body[i].xPosition, snake.body[i].yPosition);
                 Console.Write(snakeBodyCharacter);
             }
 
             Console.ForegroundColor = snakeHeadColor;
-            Console.SetCursorPosition(snake.head.position.xPosition, snake.head.position.yPosition);
+            Console.SetCursorPosition(snake.head.xPosition, snake.head.yPosition);
             Console.Write(snakeHeadCharacter);
         }
         public void renderFood(Food food)

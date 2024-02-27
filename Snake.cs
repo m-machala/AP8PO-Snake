@@ -9,22 +9,16 @@ namespace Snake
     public class Snake
     {
         public Vector2D movementVector { get; set; }
-        private ConsoleColor bodyColor;
 
-        private char bodyCharacter;
+        public Vector2D head { get; }
 
-        public Tile head { get; }
-
-        public List<Tile> body { get; }
-
+        public List<Vector2D> body { get; }
 
         public Snake(ConsoleColor headColor, ConsoleColor bodyColor, char headCharacter, char bodyCharacter, Vector2D startingHeadPosition, int startingSegmentCount, Vector2D startingDirection)
         {
-            head = new Tile(startingHeadPosition, headCharacter, headColor);
-            this.bodyColor = bodyColor;
-            this.bodyCharacter = bodyCharacter;
+            head = new Vector2D(startingHeadPosition);
             this.movementVector = startingDirection;
-            body = new List<Tile>();
+            body = new List<Vector2D>();
 
             for (int i = 0; i < startingSegmentCount; i++)
             {
@@ -34,49 +28,44 @@ namespace Snake
 
         public void eat()
         {
-            Vector2D newTilePosition = new Vector2D(0, 0);
+            Vector2D newSegmentPosition = new Vector2D(0, 0);
             if (body.Count <= 0)
             {
-                newTilePosition.addToVector(head.position);
+                newSegmentPosition.addToVector(head);
             }
             else
             {
-                newTilePosition = body[body.Count - 1].position;
+                newSegmentPosition = body[body.Count - 1];
             }
 
-            body.Add(new Tile(newTilePosition, bodyCharacter, bodyColor));
+            body.Add(new Vector2D(newSegmentPosition));
         }
 
         public void move()
         {
             for (int i = body.Count - 1; i >= 1; i--)
             {
-                body[i].position = body[i - 1].position;
+                body[i] = body[i - 1];
             }
             if (body.Count > 0)
             {
-                body[0].position = new Vector2D(head.position);
+                body[0] = new Vector2D(head);
             }
-            head.position.addToVector(this.movementVector);
+            head.addToVector(this.movementVector);
         }
 
         public bool headCollidesWithBody()
         {
             for (int i = 0; i < body.Count; i++)
             {
-                if (head.position.compareToVector(body[i].position)) return true;
+                if (head.compareToVector(body[i])) return true;
             }
             return false;
         }
 
         public bool collidesWithHead(Vector2D position)
         {
-            return head.position.compareToVector(position);
-        }
-
-        public Vector2D headPosition()
-        {
-            return head.position;
+            return head.compareToVector(position);
         }
     }
 }
