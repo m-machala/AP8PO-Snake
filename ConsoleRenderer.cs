@@ -21,6 +21,17 @@ namespace Snake
         private static char borderCharacter = '■';
         private static ConsoleColor borderColor = ConsoleColor.Cyan;
 
+        public void clearScreen()
+        {
+            Console.Clear();
+        }
+
+        public void setScreenSize(int height, int width)
+        {
+            Console.WindowHeight = height;
+            Console.WindowWidth = width;
+        }
+
         public void renderSnake(Snake snake)
         {
             Console.ForegroundColor = snakeBodyColor;
@@ -54,6 +65,13 @@ namespace Snake
                     }
                 }
             }
+        }
+
+        public void renderText(Vector2D position, string message)
+        {
+            Console.ForegroundColor = ConsoleColor.White;
+            Console.SetCursorPosition(position.xPosition, position.yPosition);
+            Console.Write(message);
         }
     }
 }

@@ -17,33 +17,28 @@ namespace Snake
         static int horizontalTileCount = 32;
         static Vector2D borderDimensions = new Vector2D(horizontalTileCount, verticalTileCount);
 
-        static ConsoleColor snakeHeadColor = ConsoleColor.Red;
-        static ConsoleColor snakeBodyColor = ConsoleColor.Green;
-
         static int initialBodyLength = 5;
+
+        static int delayBetweenMovementsMs = 500;
 
         static void Main(string[] args)
         {
             Renderer renderer = new ConsoleRenderer();
+            renderer.setScreenSize(verticalTileCount, horizontalTileCount);
             
-
-            Console.WindowHeight = verticalTileCount;
-            Console.WindowWidth = horizontalTileCount;
-
-            Random randomNumberGenerator = new Random();
             int score = 5;
             bool gameover = false;
 
             Snake snake = new Snake(calculateScreenCenterPoint(), initialBodyLength, Directions.Right);
             Food food = new Food(randomPosition(borderDimensions));
 
-            DateTime time = DateTime.Now;
-            DateTime time2 = DateTime.Now;
+            DateTime timeBefore = DateTime.Now;
+            DateTime timeDuring = DateTime.Now;
             bool buttonPressed = false;
 
             while (!gameover)
             {
-                Console.Clear();
+                renderer.clearScreen();
                 renderer.renderBorders(borderDimensions);
 
                 if (snake.head.compareToVector(food.position))
@@ -52,15 +47,18 @@ namespace Snake
                     food.position = randomPosition(borderDimensions);
                     snake.eat();
                 }
+
                 renderer.renderSnake(snake);
                 renderer.renderFood(food);
 
-                time = DateTime.Now;
+                timeBefore = DateTime.Now;
+
                 buttonPressed = false;
+
                 while (true)
                 {
-                    time2 = DateTime.Now;
-                    if (time2.Subtract(time).TotalMilliseconds > 500) { break; }
+                    timeDuring = DateTime.Now;
+                    if (timeDuring.Subtract(timeBefore).TotalMilliseconds > delayBetweenMovementsMs) { break; }
                     if (Console.KeyAvailable)
                     {
                         ConsoleKeyInfo pressedKey = Console.ReadKey(true);
@@ -105,9 +103,7 @@ namespace Snake
                 else if (!(0 < snake.head.yPosition && snake.head.yPosition < verticalTileCount - 1)) gameover = true;
                 else gameover = snake.headCollidesWithBody();
             }
-            Console.SetCursorPosition(horizontalTileCount / 5, verticalTileCount / 2);
-            Console.WriteLine("Game over, Score: "+ score);
-            Console.SetCursorPosition(horizontalTileCount / 5, verticalTileCount / 2 +1);
+            renderer.renderText(new Vector2D(horizontalTileCount / 5, verticalTileCount / 2),"Game over, Score: " + score);
         }
 
         private static Vector2D calculateScreenCenterPoint()
