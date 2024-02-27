@@ -43,27 +43,21 @@ namespace Snake
             DateTime time = DateTime.Now;
             DateTime time2 = DateTime.Now;
             bool buttonPressed = false;
-            int headX = snake.head.xPosition;
-            int headY = snake.head.yPosition;
-            int foodX = food.position.xPosition;
-            int foodY = food.position.yPosition;
+
             while (!gameover)
             {
                 Console.Clear();
                 renderer.renderBorders(borderDimensions);
 
-                if (foodX == headX && foodY == headY)
+                if (snake.head.compareToVector(food.position))
                 {
                     score++;
-                    foodX = randomNumberGenerator.Next(1, horizontalTileCount-2);
-                    foodY = randomNumberGenerator.Next(1, verticalTileCount-2);
+                    food.position = randomPosition(borderDimensions);
                     snake.eat();
                 }
                 renderer.renderSnake(snake);
+                renderer.renderFood(food);
 
-                Console.SetCursorPosition(foodX, foodY);
-                Console.ForegroundColor = ConsoleColor.Cyan;
-                Console.Write("■");
                 time = DateTime.Now;
                 buttonPressed = false;
                 while (true)
@@ -109,10 +103,9 @@ namespace Snake
                     }
                 }
                 snake.move();
-                headX = snake.head.xPosition;
-                headY = snake.head.yPosition;
-                if (!(0 <= headX && headX < horizontalTileCount)) gameover = true;
-                else if (!(0 <= headY && headY < verticalTileCount)) gameover = true;
+
+                if (!(0 < snake.head.xPosition && snake.head.xPosition < horizontalTileCount - 1)) gameover = true;
+                else if (!(0 < snake.head.yPosition && snake.head.yPosition < verticalTileCount - 1)) gameover = true;
                 else gameover = snake.headCollidesWithBody();
             }
             Console.SetCursorPosition(horizontalTileCount / 5, verticalTileCount / 2);
