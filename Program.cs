@@ -17,9 +17,6 @@ namespace Snake
         static int horizontalTileCount = 32;
         static Vector2D borderDimensions = new Vector2D(horizontalTileCount, verticalTileCount);
 
-        static char snakeHeadCharacter = '■';
-        static char snakeBodyCharacter = '■';
-
         static ConsoleColor snakeHeadColor = ConsoleColor.Red;
         static ConsoleColor snakeBodyColor = ConsoleColor.Green;
 
@@ -37,7 +34,7 @@ namespace Snake
             int score = 5;
             bool gameover = false;
 
-            Snake snake = new Snake(snakeHeadColor, snakeBodyColor, snakeHeadCharacter, snakeBodyCharacter, calculateScreenCenterPoint(), initialBodyLength, Directions.Right);
+            Snake snake = new Snake(calculateScreenCenterPoint(), initialBodyLength, Directions.Right);
             Food food = new Food(randomPosition(borderDimensions));
 
             DateTime time = DateTime.Now;

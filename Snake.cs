@@ -14,7 +14,7 @@ namespace Snake
 
         public List<Vector2D> body { get; }
 
-        public Snake(ConsoleColor headColor, ConsoleColor bodyColor, char headCharacter, char bodyCharacter, Vector2D startingHeadPosition, int startingSegmentCount, Vector2D startingDirection)
+        public Snake(Vector2D startingHeadPosition, int startingSegmentCount, Vector2D startingDirection)
         {
             head = new Vector2D(startingHeadPosition);
             this.movementVector = startingDirection;
